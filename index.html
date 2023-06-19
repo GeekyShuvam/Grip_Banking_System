@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Banking System</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #004d99;
+        }
+        
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #004d99;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .button:hover {
+            background-color: #003366;
+        }
+        
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .transaction-type-debit {
+            color: #e60000;
+            font-weight: bold;
+        }
+        
+        .transaction-type-credit {
+            color: #008000;
+            font-weight: bold;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Basic Banking System</h1>
+        <div id="homePage">
+            <h2><center>Welcome to Our Banking System</center></h2>
+            <img src="2.jpg" alt="Banking Image" style="max-width: 100%;">
+            <button class="button" onclick="viewAllCustomers()">View All Customers</button>
+        </div>
+        
+        <div id="customerList" style="display: none;">
+            <h2>Customer List</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Balance</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>Customer 1</td>
+                    <td>shuvamswain2001@gmail.com</td>
+                    <td id="customerBalance1">$1000</td>
+                    <td>
+                        <button class="button" onclick="viewCustomerDetails(1)">View Details</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Customer 2</td>
+                    <td>iteradmin@gmail.com</td>
+                    <td id="customerBalance2">$500</td>
+                    <td>
+                        <button class="button" onclick="viewCustomerDetails(2)">View Details</button>
+                    </td>
+                </tr>
+                <!-- Repeat the above rows for each customer -->
+            </table>
+            <button class="button" onclick="goToHomePage()">Back</button>
+        </div>
+        
+        <div id="customerDetails" style="display: none;">
+            <h2>Customer Details</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Balance</th>
+                </tr>
+                <tr>
+                    <td id="customerName"></td>
+                    <td id="customerEmail"></td>
+                    <td id="customerBalance"></td>
+                </tr>
+            </table>
+            <h3>Transactions</h3>
+            <table id="transactionTable">
+                <tr>
+                    <th>Sender Email</th>
+                    <th>Receiver Email</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </table>
+            <br>
+            <input type="text" id="senderEmail" placeholder="Sender Email" required>
+            <input type="text" id="receiverEmail" placeholder="Receiver Email" required>
+            <input type="number" id="transactionAmount" placeholder="Amount" required>
+            <select id="transactionType">
+                <option value="debit">Debit</option>
+                <option value="credit">Credit</option>
+            </select>
+            <button class="button" onclick="createTransaction()">Create Transaction</button>
+            <button class="button" onclick="deleteAllTransactions()">Delete All Transactions</button>
+            <button class="button" onclick="goToCustomerList()">Back</button>
+        </div>
+    </div>
+    
+    <script>
+        // Array to store customer data
+        var customers = [
+            { name: "Customer 1", email: "davpkt@gmail.com", balance: 1000, transactions: [] },
+            { name: "Customer 2", email: "puridav@gmail.com", balance: 500, transactions: [] }
+            // Add more customers here
+        ];
+        
+        function viewAllCustomers() {
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("customerList").style.display = "block";
+        }
+        
+        function goToHomePage() {
+            document.getElementById("homePage").style.display = "block";
+            document.getElementById("customerList").style.display = "none";
+        }
+        
+        function viewCustomerDetails(customerIndex) {
+            var customer = customers[customerIndex - 1];
+            document.getElementById("customerName").textContent = customer.name;
+            document.getElementById("customerEmail").textContent = customer.email;
+            document.getElementById("customerBalance").textContent = "$" + customer.balance;
+            
+            // Clear transaction table
+            var transactionTable = document.getElementById("transactionTable");
+            transactionTable.innerHTML = "";
+            
+            // Populate transaction table
+            customer.transactions.forEach(function(transaction) {
+                var row = transactionTable.insertRow();
+                var senderEmailCell = row.insertCell();
+                senderEmailCell.textContent = transaction.senderEmail;
+                var receiverEmailCell = row.insertCell();
+                receiverEmailCell.textContent = transaction.receiverEmail;
+                var amountCell = row.insertCell();
+                amountCell.textContent = "$" + transaction.amount;
+                var typeCell = row.insertCell();
+                typeCell.textContent = transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1);
+                typeCell.classList.add("transaction-type-" + transaction.type);
+                var dateCell = row.insertCell();
+                dateCell.textContent = transaction.date;
+                var deleteCell = row.insertCell();
+                var deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "button";
+                deleteButton.onclick = function() {
+                    deleteTransaction(customerIndex, transaction);
+                };
+                deleteCell.appendChild(deleteButton);
+            });
+            
+            document.getElementById("customerList").style.display = "none";
+            document.getElementById("customerDetails").style.display = "block";
+        }
+        
+        function goToCustomerList() {
+            document.getElementById("customerList").style.display = "block";
+            document.getElementById("customerDetails").style.display = "none";
+        }
+        
+        function createTransaction() {
+            var customerIndex = parseInt(document.getElementById("customerName").textContent.split(" ")[1]);
+            var senderEmail = document.getElementById("senderEmail").value;
+            var receiverEmail = document.getElementById("receiverEmail").value;
+            var amount = parseFloat(document.getElementById("transactionAmount").value);
+            var type = document.getElementById("transactionType").value;
+            var date = new Date().toLocaleString();
+            
+            var transaction = {
+                senderEmail: senderEmail,
+                receiverEmail: receiverEmail,
+                amount: amount,
+                type: type,
+                date: date
+            };
+            customers[customerIndex - 1].transactions.push(transaction);
+            
+            updateBalance(customerIndex, amount, type);
+            viewCustomerDetails(customerIndex);
+            
+            document.getElementById("senderEmail").value = "";
+            document.getElementById("receiverEmail").value = "";
+            document.getElementById("transactionAmount").value = "";
+        }
+        
+        function deleteTransaction(customerIndex, transaction) {
+            var index = customers[customerIndex - 1].transactions.indexOf(transaction);
+            if (index > -1) {
+                customers[customerIndex - 1].transactions.splice(index, 1);
+            }
+            
+            updateBalance(customerIndex, transaction.amount, transaction.type === "debit" ? "credit" : "debit");
+            viewCustomerDetails(customerIndex);
+        }
+        
+        function deleteAllTransactions() {
+            var customerIndex = parseInt(document.getElementById("customerName").textContent.split(" ")[1]);
+            customers[customerIndex - 1].transactions = [];
+            
+            updateBalance(customerIndex, null, null);
+            viewCustomerDetails(customerIndex);
+        }
+        
+        function updateBalance(customerIndex, amount, type) {
+            var customer = customers[customerIndex - 1];
+            if (amount && type) {
+                if (type === "debit") {
+                    customer.balance -= amount;
+                } else {
+                    customer.balance += amount;
+                }
+            } else {
+                customer.balance = 0;
+                customer.transactions.forEach(function(transaction) {
+                    if (transaction.type === "debit") {
+                        customer.balance -= transaction.amount;
+                    } else {
+                        customer.balance += transaction.amount;
+                    }
+                });
+            }
+            
+            document.getElementById("customerBalance" + customerIndex).textContent = "$" + customer.balance;
+        }
+    </script>
+</body>
+</html>
